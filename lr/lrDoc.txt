@@ -1,0 +1,13 @@
+the structure of lr
+
+index.php invoke core/init.php, includes/overall/globalHeader.php and includes/overall/globalFooter.php
+
+init.php invoke core/database/connect.php, core/function/users.php and core/function/general.php
+
+globalHeader.php invoke includes/head.php, includes/header.php
+
+globalFooter.php invoke includes/aside.php, includes/footer.php
+
+aside.php invoke includes/widgets/login.php
+
+header.php invoke includes/menu.php
