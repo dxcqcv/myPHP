@@ -1,4 +1,7 @@
 <?php
+    function email($to, $subject, $body){
+        mail($to, $subject, $body, 'From: dxcqcv@gmail.com');
+    }
     function logged_in_redirect() {
         if(logged_in() === true) {
             header('Location: index.php');

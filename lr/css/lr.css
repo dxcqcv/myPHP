@@ -120,6 +120,7 @@ body {
 }
 .contentLeft {
     width: 580px;
+    min-height: 100px;
 }
 .contentLeft > h1 {
     padding-bottom: 20px;

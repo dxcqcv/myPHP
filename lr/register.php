@@ -38,7 +38,7 @@
 
 <?php 
     if(isset($_GET['success']) && empty($_GET['success'])){
-        echo 'You\'ve been registered successfully';
+        echo 'You\'ve been registered successfully! Please check your email to activate your account.';
     } else {
         if(empty($_POST) === false && empty($errors) === true) {
             $register_data = array(
@@ -46,7 +46,8 @@
                 'password'   => $_POST['password'],
                 'first_name' => $_POST['first_name'],
                 'last_name'  => $_POST['last_name'],
-                'email'      => $_POST['email']
+                'email'      => $_POST['email'],
+                'email_code' => md5($_POST['username'] + microtime())
             );
             register_user($register_data);
             header("Location: register.php?success");

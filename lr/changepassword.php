@@ -26,8 +26,12 @@
 <h1>Change Password</h1>
 
 <?php
+if(isset($_GET['success']) && empty($_GET['success'])) {
+    echo 'Your password is been changed.';
+} else {
     if(empty($_POST) === false && empty($errors) === true) {
-        echo 'ok';
+        change_password($session_user_id, $_POST['password']);
+        header('Location: changepassword.php?success');
     } else if(empty($errors) === false) {
         echo output_errors($errors);
     }
@@ -37,18 +41,21 @@
     <ul>
         <li>
             Current password*:<br>
-            <input type="text" name="current_password">
+            <input type="password" name="current_password">
         </li>
         <li>
             New password*:<br>
-            <input type="text" name="password">
+            <input type="password" name="password">
         </li>
         <li>
             New password again*:<br>
-            <input type="text" name="password_again">
+            <input type="password" name="password_again">
         </li>
         <li><input type="submit" value="Change password"></li>
     </ul>
 </form>
 
-<?php include 'includes/overall/globalFooter.php'; ?>
+<?php
+} // notice this sign
+include 'includes/overall/globalFooter.php'; 
+?>

@@ -1,4 +1,20 @@
 <?php
+function activate($email, $email_code) {
+    $email      = mysql_real_escape_string($email);
+    $email_code = mysql_real_escape_string($email_code);
+
+    $query = mysql_query("SELECT COUNT(`user_id`) FROM `users` WHERE `email` = '$email' AND `email_code` = '$email_code' AND `active` = 0");
+    if(mysql_result($query, 0) == 1 ) {
+        mysql_query("UPDATE `users` SET `active` = 1 WHERE `email` = '$email'"); 
+    } else {
+        return false;
+    }
+}
+function change_password($user_id, $password) {
+    $user_id = (int)$user_id;
+    $password = md5($password);
+    mysql_query("UPDATE `users` SET `password` = '$password' WHERE `user_id` = $user_id");
+}
 function register_user($register_data) {
     array_walk($register_data, 'array_sanitize');
     $register_data['password'] = md5($register_data['password']);
@@ -7,6 +23,7 @@ function register_user($register_data) {
     $data  = '\'' . implode('\', \'', $register_data) . '\'';
 
     mysql_query("INSERT INTO `users` ($field) VALUES ($data);");
+    email($register_data['email'], 'Activate your account', "Hello ". $register_data['first_name']  .",\n\nYou need to activate your account, so use the link below: \n\n http://127.0.0.1/~clyde/myPHP/lr/activate.php?email=".$register_data['email']."&email_code=".$register_data['email_code']." \n\n- phpacademy");    
 }
 function user_count() {
     $query = mysql_query("SELECT COUNT(`user_id`) FROM `users` WHERE `active` = 1;");
