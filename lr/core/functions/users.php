@@ -1,4 +1,29 @@
 <?php
+function recover($mode, $email) {
+    $mode   = sanitize($mode);
+    $email  = sanitize($email);
+
+    $user_data = user_data(user_id_from_email($email), 'user_id', 'first_name', 'username');
+
+    if($mode == 'username') {
+        //email($email, 'Your username', 'Hello x \n\nyour username is x\n\n-by php')
+        echo 'Hello ' . $user_data['first_name'] . '<br>Your username is ' . $user_data['username'] . '<br>by php';  
+    } else if($mode == 'password') {
+        $generated_password = substr(md5(rand(999, 999999)), 0, 8); 
+        change_password($user_data['user_id'], $generated_password);
+        update_user($user_data['user_id'], array('password_recover' => '1'));
+        echo 'Your new password is ' . $generated_password;
+    }
+}
+function update_user($user_id, $update_data) {
+    $update = array();
+    array_walk($update_data, 'array_sanitize');
+
+    foreach($update_data as $field => $data) {
+        $update[] = '`' . $field . '` = \'' . $data . '\'';
+    }
+    mysql_query("UPDATE `users` SET". implode(', ', $update) ." WHERE `user_id` = $user_id") or die(mysql_error());
+}
 function activate($email, $email_code) {
     $email      = mysql_real_escape_string($email);
     $email_code = mysql_real_escape_string($email_code);
@@ -13,7 +38,7 @@ function activate($email, $email_code) {
 function change_password($user_id, $password) {
     $user_id = (int)$user_id;
     $password = md5($password);
-    mysql_query("UPDATE `users` SET `password` = '$password' WHERE `user_id` = $user_id");
+    mysql_query("UPDATE `users` SET `password` = '$password' ,`password_recover` = 0 WHERE `user_id` = $user_id");
 }
 function register_user($register_data) {
     array_walk($register_data, 'array_sanitize');
@@ -23,6 +48,7 @@ function register_user($register_data) {
     $data  = '\'' . implode('\', \'', $register_data) . '\'';
 
     mysql_query("INSERT INTO `users` ($field) VALUES ($data);");
+
     email($register_data['email'], 'Activate your account', "Hello ". $register_data['first_name']  .",\n\nYou need to activate your account, so use the link below: \n\n http://127.0.0.1/~clyde/myPHP/lr/activate.php?email=".$register_data['email']."&email_code=".$register_data['email_code']." \n\n- phpacademy");    
 }
 function user_count() {
@@ -71,6 +97,13 @@ function user_active($username) {
 function user_id_from_username($username) {
     $username = sanitize($username);
     $query = mysql_query("SELECT user_id FROM users WHERE username = '$username'");
+
+    return (mysql_result($query, 0, 'user_id'));
+}
+
+function user_id_from_email($email) {
+    $email = sanitize($email);
+    $query = mysql_query("SELECT user_id FROM users WHERE `email`= '$email'");
 
     return (mysql_result($query, 0, 'user_id'));
 }

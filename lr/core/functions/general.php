@@ -15,10 +15,10 @@
         }        
     }
     function array_sanitize(&$item) {
-        return mysql_real_escape_string($itme);
+        return htmlentities(strip_tags(mysql_real_escape_string($itme)));
     }
     function sanitize($data) {
-        return mysql_real_escape_string($data);
+        return htmlentities(strip_tags(mysql_real_escape_string($data)));
     }
 
     function output_errors($errors) {
