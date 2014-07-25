@@ -1,4 +1,26 @@
 <?php
+
+function change_profile_image($user_id, $file_temp, $file_extn){
+    $user_id = (int)$user_id;
+    $file_path = 'images/profile/' .  substr(md5(time()), 0, 10). '.' . $file_extn;
+    echo $file_path;
+    $test = move_uploaded_file($file_temp, $file_path);
+    mysql_query("UPDATE `users` SET `profile` = '" . mysql_real_escape_string($file_path)  . "'WHERE `user_id` = " . $user_id  ); 
+}
+function mail_users($subject, $body) {
+    $subject = sanitize($subject);
+    $body    = sanitize($body);
+    $query = mysql_query("SELECT `email`, `first_name` FROM `users` WHERE `allow_email` = 1");
+    while(($row = mysql_fetch_assoc($query)) !== false) {
+        email($row['email'], $subject, "Hello ". $row['first_name']  . "\n\n, " . $body); 
+    }
+} 
+function has_access($user_id, $type) {
+    $user_id    = (int)$user_id;
+    $type       = (int)$type; 
+    $query = "SELECT COUNT('user_id') FROM `users` WHERE `user_id` = $user_id AND `type` = $type";
+    return (mysql_result(mysql_query($query), 0) == 1) ? true : false; // do not type check in mysql 
+}
 function recover($mode, $email) {
     $mode   = sanitize($mode);
     $email  = sanitize($email);

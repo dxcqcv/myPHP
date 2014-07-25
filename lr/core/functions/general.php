@@ -14,6 +14,12 @@
             exit();
         }        
     }
+    function admin_protect($user_id) {
+        if(has_access($user_id, 1) === false) { // do not use type check in mysql
+            header('Location: index.php');
+            exit();
+        }
+    }
     function array_sanitize(&$item) {
         return htmlentities(strip_tags(mysql_real_escape_string($itme)));
     }
